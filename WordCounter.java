@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
-import org.jsoup.Jsoup;
+import org.jsoup.Jsoup; // 引入 Jsoup 套件
 
 public class WordCounter {
     private String urlStr;
@@ -57,6 +57,22 @@ public class WordCounter {
         return count;
     }
 
+     //網站的總字數
+    public int getTotalWordCount() {
+        if (this.content == null) {
+            this.content = fetchContent();
+        }
+        
+        if (this.content == null || this.content.isEmpty()) {
+            return 0;
+        }
+
+        String cleanText = Jsoup.parse(this.content).text(); // 把 HTML 標籤去掉
+        String plainText = cleanText.replaceAll("\\s+", ""); // \\s+ 是空白 換行 之類的
+ 
+        return plainText.length();
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -67,9 +83,11 @@ public class WordCounter {
 
         WordCounter counter = new WordCounter(url);
         int count = counter.countKeyword(keyword);
+        counter.getTotalWordCount(); // 呼叫 getTotalWordCount() 以顯示總字數
 
         System.out.println(keyword + " 共出現了 " + count + " 次");
 
         scanner.close();
     }
+
 }
