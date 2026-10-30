@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
+import org.jsoup.Jsoup;
 
 public class WordCounter {
     private String urlStr;
