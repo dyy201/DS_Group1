@@ -42,14 +42,12 @@ public class WordCounter {
             this.content = fetchContent();
         }
 
-        // 轉為小寫以進行不區分大小寫的比對
         String text = this.content.toLowerCase();
         String target = keyword.toLowerCase();
 
         int count = 0;
         int index = 0;
 
-        // 循序尋找關鍵字出現位置
         while ((index = text.indexOf(target, index)) != -1) {
             count++;
             index += target.length();
@@ -61,18 +59,14 @@ public class WordCounter {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // 照 HW3 格式提示使用者輸入
         System.out.println("請輸入 URL 與 Keyword (以空格分隔)：");
 
-        // 讀取輸入的 URL 與 Keyword
         String url = scanner.next();
         String keyword = scanner.next();
 
-        // 建立 WordCounter 物件並計算次數
         WordCounter counter = new WordCounter(url);
         int count = counter.countKeyword(keyword);
 
-        // 照 HW3 格式印出結果
         System.out.println(keyword + " 共出現了 " + count + " 次");
 
         scanner.close();
