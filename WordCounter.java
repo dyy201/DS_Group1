@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
-import org.jsoup.Jsoup; // 引入 Jsoup 套件
+import org.jsoup.Jsoup;
 
 public class WordCounter {
     private String urlStr;
@@ -20,7 +20,6 @@ public class WordCounter {
         try {
             URL url = new URL(this.urlStr);
             URLConnection conn = url.openConnection();
-            // 設定 User-Agent 偽裝成正常瀏覽器，避免被伺服器阻擋
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
 
             InputStream in = conn.getInputStream();
@@ -43,6 +42,10 @@ public class WordCounter {
             this.content = fetchContent();
         }
 
+        if (this.content == null || this.content.isEmpty()) { 
+            return 0;
+        }
+
         String text = this.content.toLowerCase();
         String target = keyword.toLowerCase();
 
@@ -57,20 +60,17 @@ public class WordCounter {
         return count;
     }
 
-     //網站的總字數
-    public int countKeyword(String keyword) {
+    // 網站的總字數
+    public int getTotalWordCount() {
         if (this.content == null) {
             this.content = fetchContent();
         }
-        
-        if (this.content == null || this.content.isEmpty()) {
+
+        if (this.content == null || this.content.isEmpty()) { 
             return 0;
         }
 
-        String cleanText = Jsoup.parse(this.content).text(); // 把 HTML 標籤去掉
-        String plainText = cleanText.replaceAll("\\s+", ""); // \\s+ 是空白 換行 之類的
- 
-        return plainText.length();
+        return this.content.length();
     }
 
     public static void main(String[] args) {
@@ -83,11 +83,11 @@ public class WordCounter {
 
         WordCounter counter = new WordCounter(url);
         int count = counter.countKeyword(keyword);
-        counter.getTotalWordCount(); // 呼叫 getTotalWordCount() 以顯示總字數
+        int totalWords = counter.getTotalWordCount(); // 正常呼叫取得總字數
 
         System.out.println(keyword + " 共出現了 " + count + " 次");
+        System.out.println("網站總字數：" + totalWords);
 
         scanner.close();
     }
-
 }
