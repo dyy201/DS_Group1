@@ -58,7 +58,7 @@ public class WordCounter {
     }
 
      //網站的總字數
-    public int getTotalWordCount() {
+    public int countKeyword(String keyword) {
         if (this.content == null) {
             this.content = fetchContent();
         }

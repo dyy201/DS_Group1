@@ -33,18 +33,19 @@ public class Main {
             keywords.add(new Keywords("演唱會", 2.0));
 
             // 2. 給定一組測試網址清單
-            ArrayList<WebPage> webPages = new ArrayList<>();
-            webPages.add(new WebPage("https://ygfamily.com/en/artists/babymonster/concert", "歪居官網"));
-            webPages.add(new WebPage("https://www.artists.tw/gigs/", "演唱會資訊網"));
-            webPages.add(new WebPage("https://zh.wikipedia.org/wiki/BABYMONSTER", "維基"));
+            ArrayList<WebTree> trees = new ArrayList<>();
+
+            WebTree t1 = new WebTree(new WebPage("https://ygfamily.com/en/artists/babymonster/concert", "官網"));
+            WebTree t2 = new WebTree(new WebPage("https://www.artists.tw/gigs/", "演唱會資訊網"));
+            WebTree t3 = new WebTree(new WebPage("https://kktix.com/events", "kktix"));
 
             // 計算每個網頁的分數
             for (WebPage page : webPages) {
                 page.setScore(keywords);
             }
 
-            // 依照 score 由高到低進行排序
-            webPages.sort((p1, p2) -> Double.compare(p2.score, p1.score));
+            // 4. 依照 score 由高到低進行排序
+            trees.sort((t1, t2) -> Double.compare(t2.root.nodeScore, t1.root.nodeScore));
 
             // 印出 Stage 1 排名結果
             System.out.println("----- Stage 1 Page Ranking Results -----");
