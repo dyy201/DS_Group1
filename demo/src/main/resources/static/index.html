@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Portal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: #faf0e6;
+            color: #1e293b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 60px 20px;
+        }
+        h1 {
+            font-size: 40px;
+            margin-bottom: 24px;
+            color: #0f172a;
+        }
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 14px 18px;
+            font-size: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            background: #ffffff;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            border-color: #3d3314;
+        }
+        button {
+            padding: 0 24px;
+            font-size: 16px;
+            font-weight: 600;
+            background-color: #3d3314;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #3d3314;
+        }
+        #results {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .result-card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .result-card a {
+            font-size: 18px;
+            font-weight: 600;
+            color: #3d3314;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .result-card a:hover {
+            text-decoration: underline;
+        }
+        .result-card .url {
+            font-size: 13px;
+            color: #64748b;
+            word-break: break-all;
+        }
+        .no-result {
+            text-align: center;
+            color: #64748b;
+            padding: 40px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Search Engine</h1>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="搜尋內容...">
+        <button type="button" onclick="doSearch()">搜尋</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        function doSearch() {
+            const query = document.getElementById('searchInput').value;
+            const resultsContainer = document.getElementById('results');
+
+            if (!query.trim()) {
+                alert('請輸入關鍵字！');
+                return;
+            }
+
+            resultsContainer.innerHTML = '<p class="no-result">搜尋中</p>';
+
+            fetch(`/api/search?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    resultsContainer.innerHTML = '';
+                    const entries = Object.entries(data);
+
+                    if (entries.length === 0) {
+                        resultsContainer.innerHTML = '<p class="no-result">沒有找到結果</p>';
+                        return;
+                    }
+
+                    entries.forEach(([title, url]) => {
+                        const card = document.createElement('div');
+                        card.className = 'result-card';
+                        card.innerHTML = `<a href="${url}" target="_blank">${title}</a><div class="url">${url}</div>`;
+                        resultsContainer.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    resultsContainer.innerHTML = '<p class="no-result">搜尋失敗</p>';
+                });
+        }
+    </script>
+</body>
+</html>

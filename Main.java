@@ -1,5 +1,8 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -32,41 +35,53 @@ public class Main {
             keywords.add(new Keywords("2026", 1.0));
             keywords.add(new Keywords("2027", 1.0));
 
-            // 2. 給定一組測試網址清單
+            // 2. 搜尋
+            
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("請輸入搜尋關鍵字：");
+            String searchKeyword = scanner.nextLine();
+
+            Google googleQuery = new Google(searchKeyword);
+            HashMap<String, String> searchResults = googleQuery.query();
+
             ArrayList<WebTree> trees = new ArrayList<>();
-
-            WebTree t1 = new WebTree(new WebPage("https://www.livenation.com.tw/event/allevents", "Live Nation Taiwan"));
-            t1.buildTree(3, 5); // 建立樹狀結構 最大深度 3、每個節點的最大子節點數量 5
-            trees.add(t1);
-
-            WebTree t2 = new WebTree(new WebPage("https://www.cosmopolitan.com/tw/entertainment/celebrity-gossip/", "Cosmopolitan Taiwan"));
-            t2.buildTree(3, 5);
-            trees.add(t2);
-
-            WebTree t3 = new WebTree(new WebPage("https://twconcertview.com/calendar", "Concert Calendar"));
-            t3.buildTree(3, 5);
-            trees.add(t3);
-
+            System.out.println("搜尋到" + searchResults.size() + " 個結果");
+           
             // 3. 計算每個網頁的分數
+             for (Map.Entry<String, String> entry : searchResults.entrySet()) {
+                String title = entry.getKey();
+                String url = entry.getValue();
+
+                WebPage webPage = new WebPage(url, title);
+                WebTree tree = new WebTree(webPage);
+
+                tree.buildTree(2, 3); // 建立樹狀結構，最大深度為 2，每個節點最多有 3 個子節點
+                trees.add(tree);
+            }
+
+            System.out.println("正在計算每個網站的分數");
             for (WebTree tree : trees) {
-                tree.setPostOrderScore(keywords);
+                tree.setPostOrderScore(keywords); // 計算整棵樹的節點分數
             }
 
             // 4. 依照 score 由高到低進行排序
             trees.sort((treeA, treeB) -> Double.compare(treeB.getFinalSiteScore(), treeA.getFinalSiteScore()));
 
             // 5. 印出 Stage 2 排名結果
-            System.out.println("---- stage 2 ranking results -----");
+            System.out.println("---- stage 3 ranking results -----");
 
             for (int i = 0; i < trees.size(); i++) {
                 WebTree tree = trees.get(i);
                 System.out.println("\nRank " + (i + 1) + ": " + tree.root.webPage.name 
-                                   + " | Average Score: " + tree.getFinalSiteScore() 
-                                   + " | URL: " + tree.root.webPage.url);
+                                   + "\n| Average Site Score: " + tree.getFinalSiteScore()
+                                   + " (Total Pages: " + tree.root.getTreeSize() + ")"
+                                   + "\n| URL: " + tree.root.webPage.url);
                 System.out.println("網站樹狀結構：");
                 tree.printTree();
-                System.out.println("------------------------------------------");
+                System.out.println("--------------------------------------------------");
             }
+
+            scanner.close();
 
         } catch (Exception e) { // 改用泛用 Exception 避免 catch 區塊編譯錯誤
             System.err.println("計算過程發生錯誤：" + e.getMessage());
